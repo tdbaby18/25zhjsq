@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>珠海2025年Q1活动奖励计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .calculator {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .input-group {
+            margin-bottom: 10px;
+        }
+        label {
+            display: inline-block;
+            margin-bottom: 5px;
+            color: #333;
+            width: 200px;
+        }
+        input[type="number"] {
+            width: 200px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        select {
+            width: 200px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9f5ff;
+            border-radius: 4px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            background: #f8f8f8;
+        }
+        .tab.active {
+            background: #007bff;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>平安银行2025年Q1活动奖励计算器</h2>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('shengjin')">升金大赢家</div>
+            <div class="tab" onclick="switchTab('jincheng')">金橙福利社</div>
+        </div>
+
+        <div id="shengjin" class="tab-content active">
+            <div class="section">
+                <h3>升金大赢家奖励计算</h3>
+                <div class="input-group">
+                    <label>上月银管月日均资产（万元）：</label>
+                    <input type="number" id="lastMonthAsset" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>上月持仓月日均资产（万元）：</label>
+                    <input type="number" id="lastMonthHold" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>目标资产层级（万元）：</label>
+                    <select id="targetLevel">
+                        <option value="0">低于5万</option>
+                        <option value="5">5万</option>
+                        <option value="10">10万</option>
+                        <option value="20">20万</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>目标持仓层级（万元）：</label>
+                    <select id="targetHoldLevel">
+                        <option value="0">低于5万</option>
+                        <option value="5">5万</option>
+                        <option value="10">10万</option>
+                        <option value="20">20万</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>是否为90天内新开户：</label>
+                    <input type="checkbox" id="isNewCustomer">
+                </div>
+                <div class="input-group">
+                    <label>是否参与三方存管任务：</label>
+                    <input type="checkbox" id="isThreeManager">
+                </div>
+                <button onclick="calculateShengjin()">计算奖励</button>
+                <div class="result" id="shengjinResult"></div>
+            </div>
+        </div>
+
+        <div id="jincheng" class="tab-content">
+            <div class="section">
+                <h3>金橙福利社奖励计算</h3>
+                <div class="input-group">
+                    <label>当前月日均资产（万元）：</label>
+                    <input type="number" id="currentAsset" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>连续达标月数：</label>
+                    <select id="consecutiveMonths">
+                        <option value="1">首次达标</option>
+                        <option value="3">连续3个月</option>
+                        <option value="6">连续6个月</option>
+                        <option value="9">连续9个月</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>是否参与季季瓜分礼：</label>
+                    <input type="checkbox" id="isQuarterShare">
+                </div>
+                <div class="input-group">
+                    <label>是否符合老友回归礼：</label>
+                    <input type="checkbox" id="isOldFriend">
+                </div>
+                <div class="input-group">
+                    <label>老友回归礼客户层级：</label>
+                    <select id="oldFriendLevel" disabled>
+                        <option value="5">富裕客户(5-20万)</option>
+                        <option value="20">准财客户(20万以上)</option>
+                    </select>
+                </div>
+                <button onclick="calculateJincheng()">计算奖励</button>
+                <div class="result" id="jinchengResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('isOldFriend').addEventListener('change', function() {
+            document.getElementById('oldFriendLevel').disabled = !this.checked;
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function calculateShengjin() {
+            const lastMonthAsset = parseFloat(document.getElementById('lastMonthAsset').value) || 0;
+            const lastMonthHold = parseFloat(document.getElementById('lastMonthHold').value) || 0;
+            const targetLevel = parseFloat(document.getElementById('targetLevel').value);
+            const targetHoldLevel = parseFloat(document.getElementById('targetHoldLevel').value);
+            const isNewCustomer = document.getElementById('isNewCustomer').checked;
+            const isThreeManager = document.getElementById('isThreeManager').checked;
+            
+            let totalReward = 0;
+            let details = [];
+
+            // 提升礼累计计算
+            let assetRewardSteps = [20, 40, 50];
+            let upReward = 0;
+            if (targetLevel > lastMonthAsset) {
+                let levelIndex = Math.min(assetRewardSteps.length, targetLevel / 5) - 1;
+                for (let i = 0; i <= levelIndex; i++) {
+                    upReward += assetRewardSteps[i];
+                }
+                totalReward += upReward;
+                details.push(`提升礼：${upReward}元（银管月日均累计晋级${targetLevel}万）`);
+            }
+
+            // 配置礼累计计算
+            let holdRewardSteps = [20, 40, 50];
+            let configReward = 0;
+            if (targetHoldLevel > lastMonthHold) {
+                let levelIndex = Math.min(holdRewardSteps.length, targetHoldLevel / 5) - 1;
+                for (let i = 0; i <= levelIndex; i++) {
+                    configReward += holdRewardSteps[i];
+                }
+                totalReward += configReward;
+                details.push(`配置礼：${configReward}元（持仓月日均累计晋级${targetHoldLevel}万）`);
+            }
+
+            // 新客礼
+            if (isNewCustomer) {
+                let newCustomerReward = 15;
+                totalReward += newCustomerReward;
+                details.push('新客礼：15元（90天内新开户）');
+            }
+
+            // 三管惊喜礼
+            if (isThreeManager) {
+                let threeManagerReward = 10;
+                totalReward += threeManagerReward;
+                details.push('惊喜礼：10元（首绑三管并单笔银转证5万元）');
+            }
+
+            document.getElementById('shengjinResult').innerHTML = 
+                `预计可获得总奖励：${totalReward}元<br>` +
+                `详细明细：<br>` + details.join('<br>');
+        }
+
+        function calculateJincheng() {
+            const currentAsset = parseFloat(document.getElementById('currentAsset').value);
+            const consecutiveMonths = parseInt(document.getElementById('consecutiveMonths').value);
+            const isQuarterShare = document.getElementById('isQuarterShare').checked;
+            const isOldFriend = document.getElementById('isOldFriend').checked;
+            const oldFriendLevel = parseInt(document.getElementById('oldFriendLevel').value);
+            
+            let details = [];
+
+            // 月月达标礼计算
+            if (currentAsset >= 5 && currentAsset < 20) {
+                let reward = '';
+                if (consecutiveMonths === 1) reward = '3-6';
+                else if (consecutiveMonths === 3) reward = '6-12';
+                else if (consecutiveMonths === 6) reward = '9-18';
+                else if (consecutiveMonths === 9) reward = '12-24';
+                details.push(`月月达标礼：${reward}元（富裕客户随机范围）`);
+            } else if (currentAsset >= 20) {
+                let reward = '';
+                if (consecutiveMonths === 1) reward = '6-9';
+                else if (consecutiveMonths === 3) reward = '12-18';
+                else if (consecutiveMonths === 6) reward = '18-27';
+                else if (consecutiveMonths === 9) reward = '24-36';
+                details.push(`月月达标礼：${reward}元（准财客户随机范围）`);
+            }
+            
+            // 周五超级购
+            if (currentAsset >= 5 && currentAsset < 20) {
+                details.push('周五超级购：1.88元/次（富裕客户）');
+            } else if (currentAsset >= 20) {
+                details.push('周五超级购：2.88元/次（准财客户）');
+            }
+
+            // 季季瓜分礼
+            if (isQuarterShare && currentAsset >= 5) {
+                details.push('季季瓜分礼：预计10-30元（完成三个任务可瓜分100万奖金池）');
+            }
+
+            // 老友回归礼
+            if (isOldFriend) {
+                let oldFriendReward = oldFriendLevel === 5 ? 25 : 35;
+                details.push(`老友回归礼：${oldFriendReward}元（${oldFriendLevel === 5 ? '富裕' : '准财'}客户）`);
+            }
+
+            document.getElementById('jinchengResult').innerHTML = 
+                `预计可获得奖励：<br>` + details.join('<br>');
+        }
+    </script>
+</body>
+</html>
